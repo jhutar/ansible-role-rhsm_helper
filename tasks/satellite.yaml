@@ -1,0 +1,10 @@
+---
+- name: "Remove katello-ca-consumer package if it is not coming from target Satellite"
+  command: rpm -e "{{ rpm_q_katello_ca_consumer.stdout }}"
+  when: "rpm_q_katello_ca_consumer.rc == 0 and 'katello-ca-consumer-' + server_hostname not in rpm_q_katello_ca_consumer.stdout"
+  register: rpm_e_katello_ca_consumer
+
+- name: "Configure for Satellite using katello-ca-consumer"
+  command: rpm -ivh "http://{{ server_hostname }}/pub/katello-ca-consumer-latest.noarch.rpm"
+  when: "rpm_q_katello_ca_consumer.rc != 0 or rpm_e_katello_ca_consumer.changed"
+...

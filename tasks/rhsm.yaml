@@ -1,0 +1,34 @@
+---
+- name: "Remove katello-ca-consumer* package"
+  command: rpm -e "{{ rpm_q_katello_ca_consumer.stdout }}"
+  when: "rpm_q_katello_ca_consumer.rc == 0"
+
+- name: "Configure for access.redhat.com"
+  community.general.ini_file:
+    path: /etc/rhsm/rhsm.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  loop:
+    - section: server
+      option: hostname
+      value: "{{ server_hostname }}"
+    - section: server
+      option: insecure
+      value: "{{ server_insecure|bool }}"
+    - section: server
+      option: port
+      value: "{{ server_port|int }}"
+    - section: server
+      option: prefix
+      value: "{{ server_prefix }}"
+    - section: rhsm
+      option: baseurl
+      value: "{{ rhsm_baseurl }}"
+    - section: rhsm
+      option: ca_cert_dir
+      value: "{{ rhsm_ca_cert_dir }}"
+    - section: rhsm
+      option: repo_ca_cert
+      value: "{{ rhsm_repo_ca_cert }}"
+...

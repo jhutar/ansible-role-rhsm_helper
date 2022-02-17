@@ -1,0 +1,29 @@
+server_hostname: subscription.rhsm.redhat.com
+server_insecure: no
+server_port: 443
+server_prefix: /subscription
+rhsm_baseurl: https://cdn.redhat.com
+rhsm_ca_cert_dir: /etc/rhsm/ca/
+rhsm_repo_ca_cert: /etc/rhsm/ca/redhat-uep.pem
+
+activationkey: null
+username: null
+password: null
+
+environment: null
+auto_attach: yes
+pool: null
+
+# If non empty, all repos except this listed will be disabled
+repos_only: []
+
+# Force cleanup before we attempt for new registration
+force_reregistration: no
+
+# Rerun regisstration if it fails
+registration_pause: 10
+registration_attempts: 3
+
+# This is used when we are trying to decide if we are registering to aaccess.redhat.com or to Satellite
+rhsm_server_hostnames:
+  - subscription.rhsm.redhat.com

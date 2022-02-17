@@ -1,0 +1,20 @@
+---
+- name: "Unregister us, ignore if it fails"
+  command:
+    subscription-manager unregister
+  ignore_errors: yes
+
+- name: "Clean registration, ignore if it fails"
+  command:
+    subscription-manager clean
+  ignore_errors: yes
+
+- name: "Remove katello-ca-consumer* package if installed"
+  shell:
+    rpm -qa | grep katello-ca-consumer && yum -y remove katello-ca-consumer* || true
+
+- name: "Remove katello-ca-consumer* package content if left behind"
+  file:
+    path: /usr/bin/katello-rhsm-consumer
+    state: absent
+...

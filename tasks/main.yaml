@@ -1,0 +1,63 @@
+---
+- name: "Set role variable facts"
+  set_fact:
+    "{{ item.key }}": "{{ item.value }}"
+  loop: "{{ registration_options|dict2items }}"
+
+- name: "Check variables makes sense"
+  assert:
+    that:
+      - "username != None or activationkey != None"
+      - "auto_attach|bool or pool != None"
+
+- name: "Force cleanup before we attempt for new registration"
+  import_tasks: cleanup.yaml
+  when: "force_reregistration|bool"
+
+- name: "Detect if katello-ca-consumer* package is installed"
+  command: rpm -qf /usr/bin/katello-rhsm-consumer
+  args:
+    warn: false
+  failed_when: false
+  changed_when: false
+  register: rpm_q_katello_ca_consumer
+
+- name: "Configure for access.redhat.com"
+  import_tasks: rhsm.yaml
+  when: "server_hostname in rhsm_server_hostnames"
+
+- name: "Configure for Satellite"
+  import_tasks: satellite.yaml
+  when: "server_hostname not in rhsm_server_hostnames"
+
+- name: "Register the system via username"
+  redhat_subscription:
+    username: "{{ username }}"
+    password: "{{ password }}"
+    auto_attach: "{{ auto_attach }}"
+    pool: "{{ pool }}"
+    environment: "{{ environment }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username != None and activationkey == None"
+
+- name: "Register the system via activationkey"
+  redhat_subscription:
+    activationkey: "{{ activationkey }}"
+    auto_attach: "{{ auto_attach }}"
+    pool: "{{ pool }}"
+    environment: "{{ environment }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username == None and activationkey != None"
+
+- name: "Disable all RHSM repos and only enable these configured"
+  rhsm_repository:
+    name: "{{ repos_only }}"
+    purge: True
+  when: "repos_only|length > 0"
+...

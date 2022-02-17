@@ -1,0 +1,11 @@
+- name: "Install, run and collect sosreports"
+  hosts: all
+  remote_user: root
+  gather_facts: off
+  tasks:
+    - name: "Register to access.redhat.com"
+      include_role:
+        name: rhsm_helper
+      vars:
+        activationkey: 123abc
+        auto_attach: yes
