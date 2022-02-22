@@ -21,43 +21,24 @@
   failed_when: false
   changed_when: false
   register: rpm_q_katello_ca_consumer
+  when: "username != None or activationkey != None"
 
 - name: "Configure for access.redhat.com"
   import_tasks: rhsm.yaml
-  when: "server_hostname in rhsm_server_hostnames"
+  when: "(username != None or activationkey != None) and server_hostname in rhsm_server_hostnames"
 
 - name: "Configure for Satellite"
   import_tasks: satellite.yaml
-  when: "server_hostname not in rhsm_server_hostnames"
-
-- name: "Register the system via username"
-  redhat_subscription:
-    username: "{{ username }}"
-    password: "{{ password }}"
-    auto_attach: "{{ auto_attach }}"
-    pool: "{{ pool }}"
-    environment: "{{ environment }}"
-  register: registering
-  until: registering.changed
-  retries: "{{ registration_attempts }}"
-  delay: "{{ registration_pause }}"
-  when: "username != None and activationkey == None"
-
-- name: "Register the system via activationkey"
-  redhat_subscription:
-    activationkey: "{{ activationkey }}"
-    auto_attach: "{{ auto_attach }}"
-    pool: "{{ pool }}"
-    environment: "{{ environment }}"
-  register: registering
-  until: registering.changed
-  retries: "{{ registration_attempts }}"
-  delay: "{{ registration_pause }}"
-  when: "username == None and activationkey != None"
+  when: "(username != None or activationkey != None) and server_hostname not in rhsm_server_hostnames"
 
 - name: "Disable all RHSM repos and only enable these configured"
   rhsm_repository:
-    name: "{{ repos_only }}"
+    name: "{{ repos_only + repos_additional }}"
     purge: True
   when: "repos_only|length > 0"
+
+- name: "Enable additional RHSM repos"
+  rhsm_repository:
+    name: "{{ repos_additional }}"
+  when: "repos_additional|length > 0"
 ...

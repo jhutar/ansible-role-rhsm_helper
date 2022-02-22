@@ -7,4 +7,29 @@
 - name: "Configure for Satellite using katello-ca-consumer"
   command: rpm -ivh "http://{{ server_hostname }}/pub/katello-ca-consumer-latest.noarch.rpm"
   when: "rpm_q_katello_ca_consumer.rc != 0 or rpm_e_katello_ca_consumer.changed"
+
+- name: "Register the system via username to Satellite"
+  redhat_subscription:
+    username: "{{ username }}"
+    password: "{{ password }}"
+    auto_attach: "{{ auto_attach }}"
+    pool: "{{ pool }}"
+    environment: "{{ environment }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username != None and activationkey == None"
+
+- name: "Register the system via activationkey to Satellite"
+  redhat_subscription:
+    activationkey: "{{ activationkey }}"
+    auto_attach: "{{ auto_attach }}"
+    pool: "{{ pool }}"
+    environment: "{{ environment }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username == None and activationkey != None"
 ...

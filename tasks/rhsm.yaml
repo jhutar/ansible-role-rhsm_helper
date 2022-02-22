@@ -31,4 +31,27 @@
     - section: rhsm
       option: repo_ca_cert
       value: "{{ rhsm_repo_ca_cert }}"
+
+- name: "Register the system via username to access.redhat.com"
+  redhat_subscription:
+    username: "{{ username }}"
+    password: "{{ password }}"
+    auto_attach: "{{ auto_attach }}"
+    pool: "{{ pool }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username != None and activationkey == None"
+
+- name: "Register the system via activationkey to access.redhat.com"
+  redhat_subscription:
+    activationkey: "{{ activationkey }}"
+    auto_attach: "{{ auto_attach }}"
+    pool: "{{ pool }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username == None and activationkey != None"
 ...

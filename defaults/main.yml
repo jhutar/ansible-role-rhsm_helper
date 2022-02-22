@@ -17,6 +17,9 @@ pool: null
 # If non empty, all repos except this listed will be disabled
 repos_only: []
 
+# Also enable these additional repos
+repos_additional: []
+
 # Force cleanup before we attempt for new registration
 force_reregistration: no
 
