@@ -4,11 +4,15 @@
     "{{ item.key }}": "{{ item.value }}"
   loop: "{{ registration_options|dict2items }}"
 
+- name: "Decide if we are going to register or not"
+  set_fact:
+    going_to_register: "(username != None or activationkey != None)|bool"
+
 - name: "Check variables makes sense"
   assert:
     that:
-      - "username != None or activationkey != None"
       - "auto_attach|bool or pool != None"
+  when: "going_to_register"
 
 - name: "Force cleanup before we attempt for new registration"
   import_tasks: cleanup.yaml
@@ -21,15 +25,15 @@
   failed_when: false
   changed_when: false
   register: rpm_q_katello_ca_consumer
-  when: "username != None or activationkey != None"
+  when: "going_to_register"
 
 - name: "Configure for access.redhat.com"
   import_tasks: rhsm.yaml
-  when: "(username != None or activationkey != None) and server_hostname in rhsm_server_hostnames"
+  when: "going_to_register and server_hostname in rhsm_server_hostnames"
 
 - name: "Configure for Satellite"
   import_tasks: satellite.yaml
-  when: "(username != None or activationkey != None) and server_hostname not in rhsm_server_hostnames"
+  when: "going_to_register and server_hostname not in rhsm_server_hostnames"
 
 - name: "Disable all RHSM repos and only enable these configured"
   rhsm_repository:
