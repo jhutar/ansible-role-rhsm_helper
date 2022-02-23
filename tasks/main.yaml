@@ -12,7 +12,7 @@
   assert:
     that:
       - "auto_attach|bool or pool != None"
-  when: "going_to_register"
+  when: "going_to_register|bool"
 
 - name: "Force cleanup before we attempt for new registration"
   import_tasks: cleanup.yaml
@@ -25,15 +25,15 @@
   failed_when: false
   changed_when: false
   register: rpm_q_katello_ca_consumer
-  when: "going_to_register"
+  when: "going_to_register|bool"
 
 - name: "Configure for access.redhat.com"
   import_tasks: rhsm.yaml
-  when: "going_to_register and server_hostname in rhsm_server_hostnames"
+  when: "going_to_register|bool and server_hostname in rhsm_server_hostnames"
 
 - name: "Configure for Satellite"
   import_tasks: satellite.yaml
-  when: "going_to_register and server_hostname not in rhsm_server_hostnames"
+  when: "going_to_register|bool and server_hostname not in rhsm_server_hostnames"
 
 - name: "Disable all RHSM repos and only enable these configured"
   rhsm_repository:
