@@ -6,7 +6,7 @@
 
 - name: "Decide if we are going to register or not"
   set_fact:
-    going_to_register: "(username != None or activationkey != None)|bool"
+    going_to_register: "{{ (username != None or activationkey != None)|bool }}"
 
 - name: "Check variables makes sense"
   assert:
