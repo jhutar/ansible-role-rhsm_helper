@@ -32,7 +32,28 @@
       option: repo_ca_cert
       value: "{{ rhsm_repo_ca_cert }}"
 
-- name: "Register the system via username to access.redhat.com"
+- name: "Register the system via username to access.redhat.com without pool"
+  redhat_subscription:
+    username: "{{ username }}"
+    password: "{{ password }}"
+    auto_attach: "{{ auto_attach }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username != None and activationkey == None and pool == None"
+
+- name: "Register the system via activationkey to access.redhat.com without pool"
+  redhat_subscription:
+    activationkey: "{{ activationkey }}"
+    auto_attach: "{{ auto_attach }}"
+  register: registering
+  until: registering.changed
+  retries: "{{ registration_attempts }}"
+  delay: "{{ registration_pause }}"
+  when: "username == None and activationkey != None and pool == None"
+
+- name: "Register the system via username to access.redhat.com with pool"
   redhat_subscription:
     username: "{{ username }}"
     password: "{{ password }}"
@@ -42,9 +63,9 @@
   until: registering.changed
   retries: "{{ registration_attempts }}"
   delay: "{{ registration_pause }}"
-  when: "username != None and activationkey == None"
+  when: "username != None and activationkey == None and pool != None"
 
-- name: "Register the system via activationkey to access.redhat.com"
+- name: "Register the system via activationkey to access.redhat.com with pool"
   redhat_subscription:
     activationkey: "{{ activationkey }}"
     auto_attach: "{{ auto_attach }}"
@@ -53,5 +74,5 @@
   until: registering.changed
   retries: "{{ registration_attempts }}"
   delay: "{{ registration_pause }}"
-  when: "username == None and activationkey != None"
+  when: "username == None and activationkey != None and pool != None"
 ...
