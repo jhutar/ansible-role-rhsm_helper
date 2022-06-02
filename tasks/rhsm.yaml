@@ -38,7 +38,7 @@
     password: "{{ password }}"
     auto_attach: "{{ auto_attach }}"
   register: registering
-  until: registering.changed
+  until: "registering.changed or 'System already registered.' in registering.msg"
   retries: "{{ registration_attempts }}"
   delay: "{{ registration_pause }}"
   when: "username != None and activationkey == None and pool == None"
@@ -48,7 +48,7 @@
     activationkey: "{{ activationkey }}"
     auto_attach: "{{ auto_attach }}"
   register: registering
-  until: registering.changed
+  until: "registering.changed or 'System already registered.' in registering.msg"
   retries: "{{ registration_attempts }}"
   delay: "{{ registration_pause }}"
   when: "username == None and activationkey != None and pool == None"
@@ -60,7 +60,7 @@
     auto_attach: "{{ auto_attach }}"
     pool: "{{ pool }}"
   register: registering
-  until: registering.changed
+  until: "registering.changed or 'System already registered.' in registering.msg"
   retries: "{{ registration_attempts }}"
   delay: "{{ registration_pause }}"
   when: "username != None and activationkey == None and pool != None"
@@ -71,7 +71,7 @@
     auto_attach: "{{ auto_attach }}"
     pool: "{{ pool }}"
   register: registering
-  until: registering.changed
+  until: "registering.changed or 'System already registered.' in registering.msg"
   retries: "{{ registration_attempts }}"
   delay: "{{ registration_pause }}"
   when: "username == None and activationkey != None and pool != None"
