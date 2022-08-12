@@ -7,4 +7,6 @@
       include_role:
         name: rhsm_helper
       vars:
-        environment: Library
+        server_hostname: satellite.example.com
+        org_id: 'Default Organization'
+        activationkey: AK_RHEL
