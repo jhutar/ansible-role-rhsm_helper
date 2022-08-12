@@ -24,12 +24,13 @@
 - name: "Register the system via activationkey to Satellite"
   redhat_subscription:
     activationkey: "{{ activationkey }}"
-    auto_attach: "{{ auto_attach }}"
-    pool: "{{ pool }}"
-    environment: "{{ environment }}"
+    org_id: "{{ org_id }}"
   register: registering
   until: registering.changed
   retries: "{{ registration_attempts }}"
   delay: "{{ registration_pause }}"
-  when: "username == None and activationkey != None"
+  when:
+    - username == None
+    - activationkey != None
+    - org_id != None
 ...
