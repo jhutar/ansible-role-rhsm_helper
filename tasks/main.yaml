@@ -19,9 +19,7 @@
   when: "force_reregistration|bool"
 
 - name: "Detect if katello-ca-consumer* package is installed"
-  command: rpm -qf /usr/bin/katello-rhsm-consumer
-  args:
-    warn: false
+  ansible.builtin.command: rpm -qf /usr/bin/katello-rhsm-consumer
   failed_when: false
   changed_when: false
   register: rpm_q_katello_ca_consumer
