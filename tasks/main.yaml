@@ -25,6 +25,10 @@
   register: rpm_q_katello_ca_consumer
   when: "going_to_register|bool"
 
+- name: "DEBUG: See content of rpm_q_katello_ca_consumer variable"
+  debug:
+    var: rpm_q_katello_ca_consumer
+
 - name: "Configure for access.redhat.com"
   import_tasks: rhsm.yaml
   when: "going_to_register|bool and server_hostname in rhsm_server_hostnames"
