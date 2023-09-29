@@ -14,11 +14,9 @@ To install the role, create `requirements.yaml` with this content:
       src: https://github.com/jhutar/ansible-role-rhsm_helper.git
       version: origin/main
 
-and then to install the role:
+and then install the required depedencies for the role to work:
 
-    ansible-galaxy install -r requirements.yaml --roles-path roles/
-
-Now the role is available in `roles/rhsm_helper/`.
+    ansible-galaxy collection install -r requirements.yml
 
 Check `rhsm.yaml` or `satellite.yaml` for example on how to use the role in the playbook.
 
