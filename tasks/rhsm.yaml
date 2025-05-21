@@ -15,7 +15,7 @@
       value: "{{ server_hostname }}"
     - section: server
       option: insecure
-      value: "{{ server_insecure|bool }}"
+      value: "{{ server_insecure | bool | int }}"
     - section: server
       option: port
       value: "{{ server_port|int }}"
